@@ -35,17 +35,6 @@ const Home: FC<{ content: { hero: any; features: any[] } }> = ({ content }) => {
   )
 }
 
-/**
- * Should really get this content from our CMS
- */
-
-Home.defaultProps = {
-  content: {
-    features: [{ title: 'default feature', body: 'default body' }],
-    hero: { title: 'default title', body: 'default body' },
-  },
-}
-
 
 export function getStaticProps(){
   return ({
