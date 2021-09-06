@@ -1,11 +1,14 @@
 import React, { FC } from 'react'
 import hydrate from 'next-mdx-remote/hydrate'
 import { majorScale, Pane, Heading, Spinner } from 'evergreen-ui'
+import matter from 'gray-matter'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { Post } from '../../types'
 import Container from '../../components/container'
 import HomeNav from '../../components/homeNav'
+import fs from 'fs'
+import path from 'path'
 
 const BlogPost: FC<Post> = ({ source, frontMatter }) => {
   const content = hydrate(source)
@@ -39,14 +42,20 @@ const BlogPost: FC<Post> = ({ source, frontMatter }) => {
   )
 }
 
-BlogPost.defaultProps = {
-  source: '',
-  frontMatter: { title: 'default title', summary: 'summary', publishedOn: '' },
+export function getStaticPaths(){
+  const postsPath = path.join(process.cwd(), 'posts')
+  const filenames = fs.readdirSync(postsPath)
+  const slugs = filenames.map((name) => {
+  const  filePath = path.join(postsPath, name)
+  const file = fs.readFileSync(filePath, 'utf-8')
+  const { data } = matter(file)
+  return data
+  })
+
+  return{
+    paths: slugs.map((s) => ({params: {slug: s.slug}}))
+  }
+
 }
 
-/**
- * Need to get the paths here
- * then the the correct post for the matching path
- * Posts can come from the fs or our CMS
- */
 export default BlogPost
